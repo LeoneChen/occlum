@@ -1,5 +1,6 @@
 include ../sgxenv.mk
 
+CC := /home/leone/SGXDiff/target/debug/libafl_cc
 BIN := $(BUILD_DIR)/bin/occlum-run
 
 C_SRCS := $(sort $(wildcard *.c))

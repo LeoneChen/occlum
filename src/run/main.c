@@ -9,7 +9,13 @@
 #include <occlum_pal_api.h>
 #include <sys/prctl.h>
 
+// The following line is needed for shared memory testcase fuzzing
+__AFL_FUZZ_INIT();
 int main(int argc, char *argv[]) {
+    // Start the forkserver at this point (i.e., forks will happen here)
+    __AFL_INIT();
+    // The following line is also needed for shared memory testcase fuzzing
+    unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;  // must be after __AFL_INIT
     // Parse arguments
     if (argc < 2) {
         fprintf(stderr, "[ERROR] occlum-run: at least one argument must be provided\n\n");
