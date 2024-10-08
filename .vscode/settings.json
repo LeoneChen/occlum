@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "/root/occlum/src/libos/Cargo.toml"
+    ],
+}

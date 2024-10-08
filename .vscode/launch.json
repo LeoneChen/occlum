@@ -1,0 +1,54 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/demos/hello_c/occlum_workspace/build/bin/occlum-run",
+            "args": [
+                "/bin/hello_world"
+            ],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}/demos/hello_c/occlum_workspace",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/lib:/opt/occlum/sgxsdk-tools/sdk_libs"
+                },
+                {
+                    "name": "OCCLUM_GDB",
+                    "value": "1"
+                },
+                {
+                    "name": "OCCLUM_LOG_LEVEL",
+                    "value": "trace"
+                }
+            ],
+            "externalConsole": false,
+            // "MIMode": "gdb",
+            "miDebuggerPath": "/opt/occlum/sgxsdk-tools/bin/sgx-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "-gdb-set substitute-path /root/linux-sgx /home/leone/linux-sgx"
+                },
+                // {
+                //     "text": "-gdb-set substitute-path /root/occlum /home/leone/occlum"
+                // }
+            ]
+        }
+    ]
+}
