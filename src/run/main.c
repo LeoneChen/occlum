@@ -8,8 +8,11 @@
 #include <sys/wait.h>
 #include <occlum_pal_api.h>
 #include <sys/prctl.h>
+#include <assert.h>
+#include "utils.h"
 
 int main(int argc, char *argv[]) {
+    agent_init(1);
     // Parse arguments
     if (argc < 2) {
         fprintf(stderr, "[ERROR] occlum-run: at least one argument must be provided\n\n");
@@ -48,8 +51,18 @@ int main(int argc, char *argv[]) {
     };
     int exit_status = 0;
     int libos_tid = 0;
+
+    kAFL_payload *pbuf =
+        (kAFL_payload *)malloc_resident_pages(PAYLOAD_MAX_SIZE / PAGE_SIZE);
+    assert(pbuf);
+    kAFL_hypercall(HYPERCALL_KAFL_GET_PAYLOAD, (uint64_t)pbuf);
+    hrange_submit(0, 0x1000, 0x7fffffffffff);
+    kAFL_hypercall(HYPERCALL_KAFL_USER_FAST_ACQUIRE, 0);
+    hprintf("Data %p %d\n", pbuf->data, pbuf->size);
+    write_to_file("./test_code", pbuf->data, pbuf->size);
+
     struct occlum_pal_create_process_args create_process_args = {
-        .path = (const char *) cmd_path,
+        .path = (const char *) "/host/test_code",
         .argv = (const char **) cmd_args,
         .env = environ,
         .stdio = (const struct occlum_stdio_fds *) &io_fds,
@@ -57,8 +70,11 @@ int main(int argc, char *argv[]) {
     };
     if (occlum_pal_create_process(&create_process_args) < 0) {
         // Command not found or other internal errors
+        hprintf("occlum_pal_create_process fail\n");
+        goto fuzz_end;
         return 127;
     }
+    hprintf("occlum_pal_create_process success\n");
 
     struct occlum_pal_exec_args exec_args = {
         .pid = libos_tid,
@@ -66,8 +82,12 @@ int main(int argc, char *argv[]) {
     };
     if (occlum_pal_exec(&exec_args) < 0) {
         // Command not found or other internal errors
+        hprintf("occlum_pal_exec fail\n");
+        goto fuzz_end;
         return 127;
     }
+    hprintf("occlum_pal_exec success\n");
+    goto fuzz_end;
 
     // Convert the exit status to a value in a shell-like encoding
     if (WIFEXITED(exit_status)) { // terminated normally
@@ -80,4 +100,8 @@ int main(int argc, char *argv[]) {
     occlum_pal_destroy();
 
     return exit_status;
+fuzz_end:
+    kAFL_hypercall(HYPERCALL_KAFL_RELEASE, 0);
+    hprintf("After HYPERCALL_KAFL_RELEASE, shouldn't reach here\n");
+    return -1;
 }
