@@ -1,0 +1,161 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: kafl",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/leone/kAFL/kafl/.venv/bin/kafl",
+            "args": [
+                "--action",
+                "single",
+                "-w",
+                "/home/leone/occlum/demos/hello_c/workdir_dbg",
+                "--kernel",
+                "/home/leone/linux/arch/x86/boot/bzImage",
+                "--initrd",
+                "/home/leone/occlum/demos/hello_c/target.cpio.gz",
+                "--memory",
+                "2100",
+                "--sharedir",
+                "/home/leone/occlum/demos/hello_c/sharedir",
+                "-t",
+                "0",
+                "--input",
+                "/home/leone/occlum/demos/hello_c/seeds/hello_world",
+                "--purge",
+                "--log-hprintf",
+                "--abort-time",
+                "24",
+                "--cpu-offset",
+                "0",
+                "--qemu-base",
+                "-enable-kvm -machine kAFL64-v1 -cpu kAFL64-Hypervisor-v1,+vmx,+rdrand -no-reboot -net none -display none"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: kafl",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/leone/kAFL/kafl/.venv/bin/kafl",
+            "args": [
+                "fuzz",
+                "-w",
+                "/home/leone/occlum/demos/hello_c/workdir",
+                "--kernel",
+                "/home/leone/linux/arch/x86/boot/bzImage",
+                "--initrd",
+                "/home/leone/occlum/demos/hello_c/target.cpio.gz",
+                "--memory",
+                "2100",
+                "--sharedir",
+                "/home/leone/occlum/demos/hello_c/sharedir",
+                "--seed-dir",
+                "/home/leone/occlum/demos/hello_c/seeds",
+                "-t",
+                "4",
+                "-ts",
+                "2",
+                "-tc",
+                "-p",
+                "1",
+                "--redqueen",
+                "--grimoire",
+                "--radamsa",
+                "-D",
+                "--funky",
+                "--purge",
+                "--log-hprintf",
+                "--abort-time",
+                "24",
+                "--cpu-offset",
+                "0",
+                "--qemu-base",
+                "-enable-kvm -machine kAFL64-v1 -cpu kAFL64-Hypervisor-v1,+vmx,+rdrand -no-reboot -net none -display none"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "(kAFL) occlum-run",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/bin/occlum-run",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            // "MIMode": "gdb",
+            "miDebuggerPath": "/opt/occlum/sgxsdk-tools/bin/sgx-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "handle SIGILL nostop",
+                },
+                {
+                    "text": "-gdb-set substitute-path /root/linux-sgx/ /home/leone/linux-sgx/",
+                },
+            ],
+            "hardwareBreakpoints": {
+                "require": true,
+            },
+            "miDebuggerServerAddress": "localhost:5555"
+        },
+        {
+            "name": "(gdb) occlum-run",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/bin/occlum-run",
+            "args": [
+                "/host/hello_world"
+            ],
+            "stopAtEntry": false,
+            "cwd": "/home/leone/occlum/demos/hello_c/occlum_workspace",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/lib:/opt/occlum/sgxsdk-tools/sdk_libs"
+                },
+                {
+                    "name": "OCCLUM_GDB",
+                    "value": "1"
+                },
+                {
+                    "name": "OCCLUM_LOG_LEVEL",
+                    "value": "trace"
+                }
+            ],
+            "externalConsole": false,
+            // "miDebuggerPath": "/opt/occlum/sgxsdk-tools/bin/sgx-gdb",
+            "miDebuggerPath": "/opt/intel/sgxsdk/bin/sgx-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "-gdb-set substitute-path /root/linux-sgx/ /home/leone/linux-sgx/",
+                },
+            ]
+        }
+    ]
+}
