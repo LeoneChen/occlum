@@ -12,6 +12,7 @@
         pal_exec;
         pal_kill;
         pal_destroy;
+        g_time_after_enclave_init;
     local:
         *;
 };
