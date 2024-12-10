@@ -87,27 +87,13 @@
             "request": "launch",
             "program": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/bin/occlum-run",
             "args": [
-                "/host/hello_world"
+                "/bin/hello_world"
             ],
             "stopAtEntry": false,
             "cwd": "/home/leone/occlum/demos/hello_c/occlum_workspace",
-            "environment": [
-                {
-                    "name": "LD_LIBRARY_PATH",
-                    "value": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/lib:/opt/occlum/sgxsdk-tools/sdk_libs"
-                },
-                {
-                    "name": "OCCLUM_GDB",
-                    "value": "1"
-                },
-                {
-                    "name": "OCCLUM_LOG_LEVEL",
-                    "value": "trace"
-                }
-            ],
+            "environment": [],
             "externalConsole": false,
-            // "miDebuggerPath": "/opt/occlum/sgxsdk-tools/bin/sgx-gdb",
-            "miDebuggerPath": "/opt/intel/sgxsdk/bin/sgx-gdb",
+            "miDebuggerPath": "/home/leone/occlum/occlum-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
