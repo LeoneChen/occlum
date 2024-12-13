@@ -85,7 +85,7 @@
             "name": "(gdb) occlum-run",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/home/leone/occlum/demos/hello_c/occlum_workspace/build/bin/occlum-run",
+            "program": "/opt/occlum/build/bin/occlum-run",
             "args": [
                 "/bin/hello_world"
             ],

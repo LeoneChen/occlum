@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 source /opt/occlum/sgxsdk-tools/environment
-LD_LIBRARY_PATH="/home/leone/occlum/demos/hello_c/occlum_workspace/build/lib:/opt/occlum/sgxsdk-tools/sdk_libs" OCCLUM_GDB=1 OCCLUM_LOG_LEVEL=info /opt/occlum/sgxsdk-tools/bin/sgx-gdb "$@"
+LD_LIBRARY_PATH="/home/leone/occlum/demos/hello_c/occlum_workspace/build/lib:/opt/occlum/sgxsdk-tools/sdk_libs" OCCLUM_GDB=1 OCCLUM_LOG_LEVEL=warn /opt/occlum/sgxsdk-tools/bin/sgx-gdb -x /home/leone/occlum/.gdbinit "$@"

@@ -15,8 +15,9 @@ new_json="$(jq '.resource_limits.user_space_size = "1MB" |
                 .resource_limits.kernel_space_stack_size ="4MB" |
                 .resource_limits.max_num_of_threads = 96 |
                 .entry_points = [ "/opt/ltp" ] |
+                .feature.enable_edmm = true |
                 .env.default = [ "OCCLUM=yes", "LTPROOT=/opt/ltp", "TMP=/tmp", "HOME=/root" ]' Occlum.json)" && \
 echo "${new_json}" > Occlum.json
 
-occlum build
+ENABLE_EDMM=Y occlum build
 
