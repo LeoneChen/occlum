@@ -15,6 +15,13 @@
 #include "errno2str.h"
 #include <linux/limits.h>
 
+#define PERFORM
+
+#ifdef PERFORM
+#include <time.h>
+clock_t g_time_after_enclave_init;
+#endif
+
 int occlum_pal_get_version(void) {
     return OCCLUM_PAL_VERSION;
 }
@@ -105,6 +112,9 @@ int occlum_pal_init(const struct occlum_pal_attr *attr) {
     if (pal_init_enclave(resolved_path) < 0) {
         return -1;
     }
+#ifdef PERFORM
+    g_time_after_enclave_init = clock();
+#endif
     eid = pal_get_enclave_id();
 
     int ecall_ret = 0;

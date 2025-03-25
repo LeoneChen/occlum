@@ -214,3 +214,49 @@ RUN cd occlum && \
 RUN mkdir -p /var/run/aesmd && echo '/opt/occlum/start_aesm.sh' >> /root/.bashrc
 
 WORKDIR /root
+
+########## ROOT ##########
+ARG USERNAME=leone
+ARG USER_UID=1001
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME
+RUN useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+
+# Add sudo to user
+RUN apt-get install -y sudo
+RUN echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME
+RUN chmod 0440 /etc/sudoers.d/$USERNAME
+RUN usermod -aG sudo $USERNAME
+
+########## USER ##########
+USER $USERNAME
+WORKDIR /home/$USERNAME
+
+# zsh in docker
+RUN sudo apt-get install -y wget
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.0/zsh-in-docker.sh)" -- \
+    -t robbyrussell \
+    -p git \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
+
+# Add proxy file
+RUN cat <<EOF > /home/$USERNAME/proxy
+#!/bin/bash
+proxy_type="http"
+proxy_ip="202.112.47.78"
+proxy_port="20171"
+export all_proxy="\${proxy_type}://\${proxy_ip}:\${proxy_port}"
+export http_proxy="\${proxy_type}://\${proxy_ip}:\${proxy_port}"
+export https_proxy="\${proxy_type}://\${proxy_ip}:\${proxy_port}"
+export ftp_proxy="\${proxy_type}://\${proxy_ip}:\${proxy_port}"
+EOF
+RUN cat <<EOF > /home/$USERNAME/noproxy
+#!/bin/bash
+unset all_proxy
+unset http_proxy
+unset https_proxy
+unset ftp_proxy
+EOF
