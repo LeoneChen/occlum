@@ -66,3 +66,9 @@ targets:
         linkname: mv
       - src: /bin/busybox
         linkname: uname
+  - target: /etc/
+    copy:
+      - from: /etc/
+        files:
+        - passwd
+        - group

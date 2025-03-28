@@ -6,3 +6,6 @@ build/
 .DS_Store
 src/libos/target/
 tools/toolchains/dcap_lib/target/
+demos/linux-ltp/ltp/
+demos/linux-ltp/ltp_install
+occlum_instance

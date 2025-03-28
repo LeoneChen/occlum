@@ -29,7 +29,7 @@ EXCLUDE_FILES = "libocclum-libos.so.$(MAJOR_VER_NUM)\$$|libocclum-pal.so.$(MAJOR
 
 SHELL := bash
 ifneq ($(SGX_MODE), HYPER)
-submodule: githooks init-submodule
+submodule: init-submodule
 	@rm -rf build
 	@# Enclaves used by tools are running in simulation mode by default to run faster.
 	@$(MAKE) SGX_MODE=SIM --no-print-directory -C tools
@@ -86,13 +86,13 @@ OCCLUM_PREFIX ?= /opt/occlum
 install: minimal_sgx_libs install_bins_and_libs
 	@echo "Install headers and miscs ..."
 	@mkdir -p $(OCCLUM_PREFIX)/include/
-	@cp -r src/pal/include/*.h $(OCCLUM_PREFIX)/include
-	@chmod 444 $(OCCLUM_PREFIX)/include/*.h
+	@sudo cp -r src/pal/include/*.h $(OCCLUM_PREFIX)/include
+	@sudo chmod 444 $(OCCLUM_PREFIX)/include/*.h
 	@mkdir -p $(OCCLUM_PREFIX)/etc/template/
-	@cp etc/template/* $(OCCLUM_PREFIX)/etc/template
-	@chmod 444 $(OCCLUM_PREFIX)/etc/template/*
-	@cp build/sefs-cli.Enclave.xml $(OCCLUM_PREFIX)/build
-	@chmod 644 $(OCCLUM_PREFIX)/build/sefs-cli.Enclave.xml
+	@sudo cp etc/template/* $(OCCLUM_PREFIX)/etc/template
+	@sudo chmod 444 $(OCCLUM_PREFIX)/etc/template/*
+	@sudo cp build/sefs-cli.Enclave.xml $(OCCLUM_PREFIX)/build
+	@sudo chmod 644 $(OCCLUM_PREFIX)/build/sefs-cli.Enclave.xml
 
 	@echo "Installation is done."
 
@@ -103,16 +103,16 @@ install_bins_and_libs:
 	@$(MAKE) SGX_MODE=SIM --no-print-directory -C src
 	@echo "Install libraries ..."
 	@mkdir -p $(OCCLUM_PREFIX)/build/bin/
-	@cp build/bin/* $(OCCLUM_PREFIX)/build/bin
+	@sudo cp build/bin/* $(OCCLUM_PREFIX)/build/bin
 	@mkdir -p $(OCCLUM_PREFIX)/build/lib/
 	@# Don't copy libos library and pal library symbolic files to install dir
-	@cd build/lib && cp --no-dereference `ls | grep -Ev $(EXCLUDE_FILES)` $(OCCLUM_PREFIX)/build/lib/ && cd -
+	@cd build/lib && sudo cp --no-dereference `ls | grep -Ev $(EXCLUDE_FILES)` $(OCCLUM_PREFIX)/build/lib/ && cd -
 	@# Create symbolic for pal library and libos (hardware mode)
 	@cd $(OCCLUM_PREFIX)/build/lib && \
-		ln -sf libocclum-pal.so.$(VERSION_NUM) libocclum-pal.so.$(MAJOR_VER_NUM) && \
-		ln -sf libocclum-pal.so.$(MAJOR_VER_NUM) libocclum-pal.so && \
-		ln -sf libocclum-libos.so.$(VERSION_NUM) libocclum-libos.so.$(MAJOR_VER_NUM) && \
-		ln -sf libocclum-libos.so.$(MAJOR_VER_NUM) libocclum-libos.so
+		sudo ln -sf libocclum-pal.so.$(VERSION_NUM) libocclum-pal.so.$(MAJOR_VER_NUM) && \
+		sudo ln -sf libocclum-pal.so.$(MAJOR_VER_NUM) libocclum-pal.so && \
+		sudo ln -sf libocclum-libos.so.$(VERSION_NUM) libocclum-libos.so.$(MAJOR_VER_NUM) && \
+		sudo ln -sf libocclum-libos.so.$(MAJOR_VER_NUM) libocclum-libos.so
 else
 install_bins_and_libs: hyper_mode_libs
 	@# Install both libraries for SIM mode and HYPER mode
@@ -143,16 +143,16 @@ SGX_SDK ?= /opt/intel/sgxsdk
 minimal_sgx_libs: $(SGX_SDK)/lib64/libsgx_uae_service_sim.so $(SGX_SDK)/lib64/libsgx_quote_ex_sim.so
 	@echo "Install needed sgx-sdk tools ..."
 	@mkdir -p $(OCCLUM_PREFIX)/sgxsdk-tools/lib64
-	@cp $(SGX_SDK)/lib64/{libsgx_ptrace.so,libsgx_uae_service_sim.so,libsgx_quote_ex_sim.so} $(OCCLUM_PREFIX)/sgxsdk-tools/lib64
+	@sudo cp $(SGX_SDK)/lib64/{libsgx_ptrace.so,libsgx_uae_service_sim.so,libsgx_quote_ex_sim.so} $(OCCLUM_PREFIX)/sgxsdk-tools/lib64
 	@mkdir -p $(OCCLUM_PREFIX)/sgxsdk-tools/lib64/gdb-sgx-plugin
-	@cd $(SGX_SDK)/lib64/gdb-sgx-plugin/ && cp $$(ls -A | grep -v __pycache__) $(OCCLUM_PREFIX)/sgxsdk-tools/lib64/gdb-sgx-plugin
-	@cd $(SGX_SDK) && cp -a --parents {bin/sgx-gdb,bin/x64/sgx_sign*} $(OCCLUM_PREFIX)/sgxsdk-tools/
+	@cd $(SGX_SDK)/lib64/gdb-sgx-plugin/ && sudo cp $$(ls -A | grep -v __pycache__) $(OCCLUM_PREFIX)/sgxsdk-tools/lib64/gdb-sgx-plugin
+	@cd $(SGX_SDK) && sudo cp -a --parents {bin/sgx-gdb,bin/x64/sgx_sign*} $(OCCLUM_PREFIX)/sgxsdk-tools/
 	@mkdir -p $(OCCLUM_PREFIX)/sgxsdk-tools/sdk_libs && cd $(OCCLUM_PREFIX)/sgxsdk-tools/sdk_libs && \
-		ln -sf ../lib64/libsgx_uae_service_sim.so libsgx_uae_service_sim.so && \
-		ln -sf ../lib64/libsgx_quote_ex_sim.so libsgx_quote_ex_sim.so
+		sudo ln -sf ../lib64/libsgx_uae_service_sim.so libsgx_uae_service_sim.so && \
+		sudo ln -sf ../lib64/libsgx_quote_ex_sim.so libsgx_quote_ex_sim.so
 	@# Delete SGX_LIBRARY_PATH env in sgx-gdb which are defined in etc/environment
-	@sed -i '/^SGX_LIBRARY_PATH=/d' $(OCCLUM_PREFIX)/sgxsdk-tools/bin/sgx-gdb
-	@cp etc/environment $(OCCLUM_PREFIX)/sgxsdk-tools/
+	@sudo sed -i '/^SGX_LIBRARY_PATH=/d' $(OCCLUM_PREFIX)/sgxsdk-tools/bin/sgx-gdb
+	@sudo cp etc/environment $(OCCLUM_PREFIX)/sgxsdk-tools/
 
 ifeq ($(SGX_MODE), HYPER)
 # Install HYPER mode libs

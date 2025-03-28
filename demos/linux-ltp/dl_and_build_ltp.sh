@@ -15,6 +15,6 @@ pushd ltp
 git apply ../0001-Make-it-work-on-Occlum.patch
 make autotools
 ./configure --prefix=${LTP_INSTALL_DIR}
-make -j && make install
+OPT_CFLAGS="-O0" make -j && make install
 
 popd
