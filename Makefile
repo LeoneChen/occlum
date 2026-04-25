@@ -29,11 +29,12 @@ EXCLUDE_FILES = "libocclum-libos.so.$(MAJOR_VER_NUM)\$$|libocclum-pal.so.$(MAJOR
 
 SHELL := bash
 ifneq ($(SGX_MODE), HYPER)
-submodule: githooks init-submodule
+submodule: init-submodule
 	@rm -rf build
 	@# Enclaves used by tools are running in simulation mode by default to run faster.
 	@$(MAKE) SGX_MODE=SIM --no-print-directory -C tools
 	@$(MAKE) --no-print-directory -C deps/sefs/sefs-cli clean
+	@cd deps/sefs/sefs-cli/app && cargo update -p syn@2.0.117 --precise 2.0.106 && cargo update -p proc-macro2 --precise 1.0.103 && cargo update -p quote --precise 1.0.41 && cargo update -p unicode-ident --precise 1.0.22 && cargo update -p unicode-segmentation --precise 1.12.0
 	@$(MAKE) --no-print-directory -C deps/sefs/sefs-cli no_sign SGX_MODE=HW
 	@cp deps/sefs/sefs-cli/bin/sefs-cli build/bin
 	@cp deps/sefs/sefs-cli/lib/libsefs-cli.so build/lib
@@ -86,10 +87,10 @@ OCCLUM_PREFIX ?= /opt/occlum
 install: minimal_sgx_libs install_bins_and_libs
 	@echo "Install headers and miscs ..."
 	@mkdir -p $(OCCLUM_PREFIX)/include/
-	@cp -r src/pal/include/*.h $(OCCLUM_PREFIX)/include
+	@cp -rf src/pal/include/*.h $(OCCLUM_PREFIX)/include
 	@chmod 444 $(OCCLUM_PREFIX)/include/*.h
 	@mkdir -p $(OCCLUM_PREFIX)/etc/template/
-	@cp etc/template/* $(OCCLUM_PREFIX)/etc/template
+	@cp -f etc/template/* $(OCCLUM_PREFIX)/etc/template
 	@chmod 444 $(OCCLUM_PREFIX)/etc/template/*
 	@cp build/sefs-cli.Enclave.xml $(OCCLUM_PREFIX)/build
 	@chmod 644 $(OCCLUM_PREFIX)/build/sefs-cli.Enclave.xml
